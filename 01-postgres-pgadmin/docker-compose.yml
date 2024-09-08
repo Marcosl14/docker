@@ -1,0 +1,112 @@
+version: '3' # version de docker compose
+
+services:
+  database:
+    container_name: postgres_database
+    image: postgres:15.1
+    volumes:
+      # - postgres-db:/var/lib/postgresql/data # volumen nombrado nuevo
+      - ./postgres:/var/lib/postgresql/data # bind volume
+    ports:
+      - "5432:5432" # para poder exponer publicamente la BD
+    environment:
+      - POSTGRES_PASSWORD=123456
+
+  pgAdmin:
+    depends_on:
+      - database # servicio del que depende
+    container_name: pgadmin_util
+    image: dpage/pgadmin4:6.17
+    volumes:
+      - ./pgadmin:/var/lib/pgadmin # bind volume -> para almacenar los datos de conexion de la BD 
+    ports:
+      - "8080:80"
+    environment:
+      - PGADMIN_DEFAULT_PASSWORD=123456
+      - PGADMIN_DEFAULT_EMAIL=pepe@google.com
+
+# Asi se crea un nuevo volumen
+# volumes:
+#   postgres-db: 
+
+# Y asi se usa un volumen ya creado
+# volumes:
+#   postgres-db: 
+#     external: true
+
+
+# NOTA: cambios en los volumenes implica recrear toda la infra.
+# Es decir: hacer docker compose up, no va a ajustar los cambios en el volumen.
+# docker compose down
+# Es necesario eliminar todo, y volver a levantar todo nuevamente.
+
+
+# la red es creada automaticamente por docker compose
+
+# para conectarse a la BD desde afuera:
+# docker network ls
+# docker network inspect nombre-red
+
+# nos devolvera algo asi
+# [
+#     {
+#         "Name": "01-postgres-pgadmin_default",
+#         "Id": "3a5b48d1c2369b5ac513ec73cc01756be08b11e6a55b03c4a6ac0edbee0d5288",
+#         "Created": "2024-01-14T19:20:59.249105375Z",
+#         "Scope": "local",
+#         "Driver": "bridge",
+#         "EnableIPv6": false,
+#         "IPAM": {
+#             "Driver": "default",
+#             "Options": null,
+#             "Config": [
+#                 {
+#                     "Subnet": "172.18.0.0/16",
+#                     "Gateway": "172.18.0.1"
+#                 }
+#             ]
+#         },
+#         "Internal": false,
+#         "Attachable": false,
+#         "Ingress": false,
+#         "ConfigFrom": {
+#             "Network": ""
+#         },
+#         "ConfigOnly": false,
+#         "Containers": {
+#             "063299fe9f3898452c6a949c13e18b32f1f8a0c8b5932a4d25977c081afbd3d2": {
+#                 "Name": "postgres_database",
+#                 "EndpointID": "0259fe43d2de682b89fb1df68a4a856f0330ea8d9564303b9f221c865c14190d",
+#                 "MacAddress": "02:42:ac:12:00:02",
+#                 "IPv4Address": "172.18.0.2/16",
+#                 "IPv6Address": ""
+#             },
+#             "cf63824f7260ddb0f52e1f375d57f6473413cecacfb9110a7f8c540d87c8ec64": {
+#                 "Name": "pgadmin_util",
+#                 "EndpointID": "847c790124fa89e4296fd1c5c1767de474b50bfa2c971b527b42267c87a0b0b7",
+#                 "MacAddress": "02:42:ac:12:00:03",
+#                 "IPv4Address": "172.18.0.3/16",
+#                 "IPv6Address": ""
+#             }
+#         },
+#         "Options": {},
+#         "Labels": {
+#             "com.docker.compose.network": "default",
+#             "com.docker.compose.project": "01-postgres-pgadmin",
+#             "com.docker.compose.version": "2.20.2"
+#         }
+#     }
+# ]
+
+# buscamos el IP de la red, es decir: postgres_database -> IPv4Address -> 172.18.0.2
+
+# TypeOrmModule.forRoot({
+#       type: 'postgres',
+#       host: '172.18.0.2',
+#       port: 5432,
+#       username: 'postgres',
+#       password: '123456',
+#       database: 'database',
+#       synchronize: true,
+#     }),
+
