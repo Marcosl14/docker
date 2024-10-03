@@ -1,0 +1,128 @@
+version: '3.9'
+
+services:
+  manager1:
+    image: docker:20.10.7-dind
+    container_name: manager1
+    privileged: true
+    command: ["dockerd"]
+    ports:
+      - "2377:2377"
+      - "7946:7946"
+      - "4789:4789"
+    volumes:
+      - manager1-data:/var/lib/docker
+      - manager1-docker:/var/run/docker
+    networks:
+      docker-swarm-network:
+        ipv4_address: 172.28.1.1
+
+  manager2:
+    image: docker:20.10.7-dind
+    container_name: manager2
+    privileged: true
+    command: ["dockerd"]
+    volumes:
+      - manager2-data:/var/lib/docker
+      - manager2-docker:/var/run/docker
+    networks:
+      docker-swarm-network:
+        ipv4_address: 172.28.1.2
+
+  manager3:
+    image: docker:20.10.7-dind
+    container_name: manager3
+    privileged: true
+    command: ["dockerd"]
+    volumes:
+      - manager3-data:/var/lib/docker
+      - manager3-docker:/var/run/docker
+    networks:
+      docker-swarm-network:
+        ipv4_address: 172.28.1.3
+
+  worker1:
+    image: docker:20.10.7-dind
+    container_name: worker1
+    privileged: true
+    command: ["dockerd"]
+    volumes:
+      - worker1-data:/var/lib/docker
+      - worker1-docker:/var/run/docker
+    networks:
+      docker-swarm-network:
+        ipv4_address: 172.28.10.1
+
+  worker2:
+    image: docker:20.10.7-dind
+    container_name: worker2
+    privileged: true
+    command: ["dockerd"]
+    volumes:
+      - worker2-data:/var/lib/docker
+      - worker2-docker:/var/run/docker
+    networks:
+      docker-swarm-network:
+        ipv4_address: 172.28.10.2
+
+  worker3:
+    image: docker:20.10.7-dind
+    container_name: worker3
+    privileged: true
+    command: ["dockerd"]
+    volumes:
+      - worker3-data:/var/lib/docker
+      - worker3-docker:/var/run/docker
+    networks:
+      docker-swarm-network:
+        ipv4_address: 172.28.10.3
+
+  worker4:
+    image: docker:20.10.7-dind
+    container_name: worker4
+    privileged: true
+    command: ["dockerd"]
+    volumes:
+      - worker4-data:/var/lib/docker
+      - worker4-docker:/var/run/docker
+    networks:
+      docker-swarm-network:
+        ipv4_address: 172.28.10.4
+
+  worker5:
+    image: docker:20.10.7-dind
+    container_name: worker5
+    privileged: true
+    command: ["dockerd"]
+    volumes:
+      - worker5-data:/var/lib/docker
+      - worker5-docker:/var/run/docker
+    networks:
+      docker-swarm-network:
+        ipv4_address: 172.28.10.5
+
+volumes:
+  manager1-data:
+  manager2-data:
+  manager3-data:
+  worker1-data:
+  worker2-data:
+  worker3-data:
+  worker4-data:
+  worker5-data:
+
+  manager1-docker:
+  manager2-docker:
+  manager3-docker:
+  worker1-docker:
+  worker2-docker:
+  worker3-docker:
+  worker4-docker:
+  worker5-docker:
+
+networks:
+  docker-swarm-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.28.0.0/16

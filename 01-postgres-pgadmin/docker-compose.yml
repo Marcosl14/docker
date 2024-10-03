@@ -7,6 +7,7 @@ services:
     volumes:
       # - postgres-db:/var/lib/postgresql/data # volumen nombrado nuevo
       - ./postgres:/var/lib/postgresql/data # bind volume
+    restart: always
     ports:
       - "5432:5432" # para poder exponer publicamente la BD
     environment:

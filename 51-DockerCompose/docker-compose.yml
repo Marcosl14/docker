@@ -1,0 +1,63 @@
+# comandos:
+# docker compose up -d
+# docker exec -i 02-mysql-database-1 bash (esto lo podemos hacer tambien desde la extension de docker para VS Code)
+# mysql -u root -p
+# show databases;
+# use wordpressdb;
+# SELECT * FROM wp_users;
+
+version: '3.9' # version de docker compose
+
+services:
+  wordpress:
+    image: wordpress
+    container_name: wordpress
+    restart: always
+    ports:
+      - 9090:80
+    environment:
+      - WORDPRESS_DB_HOST=db-host   # database (nombre del servicio) o db-host (alias de la red) 
+      - WORDPRESS_DB_USER=${MYSQL_USER}
+      - WORDPRESS_DB_PASSWORD=${MYSQL_PASSWORD}
+      - WORDPRESS_DB_NAME=${MYSQL_DATABASE}
+    networks:
+      - example_network
+    depends_on:
+      - database
+
+  database:
+    image: mysql
+    container_name: mysql_database
+    restart: always
+    env_file:
+      - .env
+    volumes:
+      # named (y se declaran mas abajo como "volumes"):
+      - database_volume:/var/lib/mysql
+      # anonimous:
+      - /var/lib/mysql
+      # bind:
+      - ./database:/var/lib/mysql
+    networks:
+      example_network:
+        aliases:
+          - db-host
+
+# https://docs.docker.com/reference/compose-file/volumes/
+volumes:
+  database_volume:
+    name: mysql_database_volume
+    labels:
+      project: ejemplo
+      developer: marquitos
+      environment: development
+    # external: true  -> Si se establece en true, indica que el volumen ya existe y no debe ser creado por Docker Compose
+
+# https://docs.docker.com/reference/compose-file/networks/
+networks:
+  example_network:
+    name: example_network
+    labels:
+      project: ejemplo
+      developer: marquitos
+      environment: development
